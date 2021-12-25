@@ -2,12 +2,6 @@
 vmod-cachehits
 ============
 
-notice
-------
-
-For new developments, we recommend to consider using
-https://github.com/Dridi/vcdk
-
 SYNOPSIS
 ========
 
@@ -16,28 +10,25 @@ import cachehits;
 DESCRIPTION
 ===========
 
-CacheHits Varnish vmod demonstrating how to write an out-of-tree Varnish vmod.
+Varnish vmod to enable hinting to the backend the number of previous cache hits.
 
-Implements the traditional Hello World as a vmod.
+The intended usage is for the backend to notice that an object has a high cache hit rate and run additional optimizations. (for example, higher png compression level)
 
 FUNCTIONS
 =========
 
-hello
------
-
 Prototype
         ::
 
-                hello(STRING S)
+                count()
 Return value
-	STRING
+       INT
 Description
-	Returns "Hello, " prepended to S
+       Returns number of cache hits for stale object
 CacheHits
         ::
 
-                set resp.http.hello = cachehits.hello("World");
+                set bereq.http.Cache-Hits = cachehits.count();
 
 INSTALLATION
 ============
@@ -95,9 +86,8 @@ In your VCL you could then use this vmod along the following lines::
 
         import cachehits;
 
-        sub vcl_deliver {
-                # This sets resp.http.hello to "Hello, World"
-                set resp.http.hello = cachehits.hello("World");
+        sub vcl_backend_fetch {
+                set bereq.http.Cache-Hits = cachehits.count();
         }
 
 COMMON PROBLEMS
@@ -113,18 +103,3 @@ COMMON PROBLEMS
   Make sure you build this vmod against its correspondent Varnish Cache version.
   For instance, to build against Varnish Cache 4.1, this vmod must be built from
   branch 4.1.
-
-START YOUR OWN VMOD
-===================
-
-The basic steps to start a new vmod from this cachehits are::
-
-  name=myvmod
-  git clone libvmod-cachehits libvmod-$name
-  cd libvmod-$name
-  ./rename-vmod-script $name
-
-and follow the instructions output by rename-vmod-script
-
-.. image:: https://circleci.com/gh/varnishcache/libvmod-cachehits/tree/master.svg?style=svg
-    :target: https://app.circleci.com/pipelines/github/varnishcache/libvmod-cachehits?branch=master

@@ -1,7 +1,5 @@
 #
-# Copyright YOU (c) 1900.
-#
-# (vmodtool requires this format.)
+# Copyright Movable, Inc (c) 2021.
 #
 
 $Module cachehits 3 CacheHits VMOD
@@ -9,26 +7,8 @@ $Module cachehits 3 CacheHits VMOD
 DESCRIPTION
 ===========
 
-This is the embedded documentation for the cachehits VMOD. It should
-mention what the vmod is intended to do.
+This module is intended to be used for background fetches, to notify the backend about the cache hit rate of the stale object. The idea is that the backend can notice a high cache hit count and decide to spend more CPU cycles optimizing the response. For instance, an encoder could apply a second pass or increase the compression rate.
 
-It can span multiple lines and is written in RST format.
-You can even have links and lists in here:
-
-* https://github.com/varnish/libvmod-cachehits/
-* https://www.varnish-cache.org/
-
-$Event event_function
-$Function STRING info()
-
-Returns a string set by the last VCL event, demonstrating the use of
-event functions.
-
-$Function STRING hello(STRING)
-
-The different functions provided by the VMOD should also have their own
-embedded documentation. This section is for the hello() function.
-
-$Function INT cache_hits()
+$Function INT count()
 
 Returns the number of times the object has been used in a cache hit.
