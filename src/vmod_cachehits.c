@@ -82,3 +82,18 @@ vmod_hello(VRT_CTX, VCL_STRING name)
 	WS_Release(ctx->ws, v);
 	return (p);
 }
+
+VCL_INT
+vmod_cache_hits(VRT_CTX)
+{
+	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
+	CHECK_OBJ_NOTNULL(ctx->bo, BUSYOBJ_MAGIC);
+
+	if (ctx->bo->is_bgfetch == 1) {
+		CHECK_OBJ_NOTNULL(ctx->bo->stale_oc, OBJCORE_MAGIC);
+
+		return (int)ctx->bo->stale_oc->hits;
+	}
+
+	return 0;
+}

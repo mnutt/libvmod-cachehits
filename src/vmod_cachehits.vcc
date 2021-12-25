@@ -28,3 +28,7 @@ $Function STRING hello(STRING)
 
 The different functions provided by the VMOD should also have their own
 embedded documentation. This section is for the hello() function.
+
+$Function INT cache_hits()
+
+Returns the number of times the object has been used in a cache hit.
