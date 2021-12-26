@@ -1,0 +1,78 @@
+varnishtest "Test cachehits vmod"
+
+server s1 {
+    # initial requests should have no cache hits
+	rxreq
+	expect req.url == "/1"
+	expect req.http.bgfetch == false
+    expect req.http.Cache-Hits == 0
+	txresp -hdr "Age: 1" -hdr "Cache-Control: max-age=2" -body "1"
+
+    # later bgfetch should reflect the number of previous cache hits
+	rxreq
+	expect req.url == "/1"
+	expect req.http.bgfetch == true
+    expect req.http.Cache-Hits == 2
+	txresp -hdr "Age: 1" -hdr "Cache-Control: max-age=2" -body "2"
+
+    # other path should have no cache hits
+	rxreq
+	expect req.url == "/2"
+	expect req.http.bgfetch == false
+    expect req.http.Cache-Hits == 0
+	txresp
+
+    # new objects reset the counters
+	rxreq
+	expect req.url == "/1"
+	expect req.http.bgfetch == true
+    expect req.http.Cache-Hits == 1
+	txresp -body "3"
+} -start
+
+varnish v1 -vcl+backend {
+	import cachehits;
+
+	sub vcl_backend_fetch {
+		set bereq.http.bgfetch = bereq.is_bgfetch;
+		set bereq.http.Cache-Hits = cachehits.count();
+	}
+} -start
+
+client c1 {
+	txreq -url "/1"
+	rxresp
+	expect resp.body == "1"
+
+	txreq -url "/1"
+	rxresp
+	expect resp.body == "1"
+} -run
+
+delay 2
+
+# Get a grace hit, will trigger a background fetch
+
+client c2 {
+	txreq -url "/1"
+	rxresp
+	expect resp.body == "1"
+} -run
+
+delay 2
+
+client c3 {
+	txreq -url "/2"
+	rxresp
+	txreq -url "/1"
+	rxresp
+	expect resp.body == "2"
+} -run
+
+delay 2
+
+client c4 {
+	txreq -url "/1"
+	rxresp
+	expect resp.body == "3"
+} -run
