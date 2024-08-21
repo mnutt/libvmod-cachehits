@@ -17,20 +17,19 @@ jobs:
       matrix:
         varnish:
           - "https://github.com/varnishcache/varnish-cache/archive/master.tar.gz" #VRT=14.0
+          - "https://varnish-cache.org/_downloads/varnish-7.5.0.tgz" #VRT=14.0
+          - "https://varnish-cache.org/_downloads/varnish-7.4.3.tgz" #VRT=14.0
           - "https://varnish-cache.org/_downloads/varnish-7.0.0.tgz" #VRT=14.0
-          - "https://varnish-cache.org/_downloads/varnish-6.6.1.tgz" #VRT=13.0
-          - "https://varnish-cache.org/_downloads/varnish-6.5.2.tgz" #VRT=12.0
-          - "https://varnish-cache.org/_downloads/varnish-6.4.0.tgz" #VRT=11.0
-          - "https://varnish-cache.org/_downloads/varnish-6.3.2.tgz" #VRT=10.0
-          - "https://varnish-cache.org/_downloads/varnish-6.2.3.tgz" #VRT=9.0
-          - "https://varnish-cache.org/_downloads/varnish-6.0.10.tgz" #VRT=7.1
+          - "https://varnish-cache.org/_downloads/varnish-6.0.13.tgz"
         include:
           - varnish: "https://github.com/varnishcache/varnish-cache/archive/master.tar.gz"
             allow_failures: "true"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: install build depends
-        run: sudo apt-get install python3-docutils python3-sphinx
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3-docutils python3-sphinx
       - name: build varnish
         run: |
           wget ${{ matrix.varnish }}
