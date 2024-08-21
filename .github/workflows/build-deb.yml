@@ -37,7 +37,7 @@ jobs:
           - 71
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: install build depends
         run: |
           sudo apt-get update
