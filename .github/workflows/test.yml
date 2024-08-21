@@ -23,9 +23,11 @@ jobs:
           - varnish: "https://github.com/varnishcache/varnish-cache/archive/master.tar.gz"
             allow_failures: "true"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: install build depends
-        run: sudo apt-get install python3-docutils python3-sphinx
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3-docutils python3-sphinx
       - name: build varnish
         run: |
           wget ${{ matrix.varnish }}
