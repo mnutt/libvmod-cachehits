@@ -39,7 +39,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: install build depends
       run: |
-       sudo apt-get install build-essential devscripts debhelper dh-autoreconf pkg-config autogen automake autotools-dev autoconf libtool
+       sudo apt-get install python3-sphinx build-essential devscripts debhelper python3-docutils dh-autoreconf pkg-config autogen automake autotools-dev autoconf libtool
     - name: install varnish
       run: |
        cd $GITHUB_WORKSPACE
