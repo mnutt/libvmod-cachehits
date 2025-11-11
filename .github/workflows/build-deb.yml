@@ -28,18 +28,18 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - "ubuntu-20.04"
           - "ubuntu-22.04"
+          - "ubuntu-24.04"
         vrt:
+          - 220
           - 190
-          - 130
           - 71
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
     - name: install build depends
       run: |
-       sudo apt-get install python3-sphinx build-essential devscripts debhelper python3-docutils dh-autoreconf pkg-config autogen automake autotools-dev autoconf libtool
+       sudo apt-get install python3-sphinx build-essential devscripts debhelper python3-docutils dh-autoreconf pkg-config autogen automake autotools-dev autoconf libtool libpcre3-dev
     - name: install varnish
       run: |
        cd $GITHUB_WORKSPACE
