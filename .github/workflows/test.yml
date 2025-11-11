@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: install build depends
-        run: sudo apt-get install python3-docutils python3-sphinx libedit-dev
+        run: sudo apt-get install python3-docutils python3-sphinx libedit-dev libpcre3-dev
       - name: build varnish
         run: |
           wget ${{ matrix.varnish }}
