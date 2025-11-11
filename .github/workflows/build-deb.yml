@@ -33,7 +33,6 @@ jobs:
         vrt:
           - 220
           - 190
-          - 130
           - 71
     runs-on: ${{ matrix.os }}
     steps:
