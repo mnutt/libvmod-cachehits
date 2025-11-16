@@ -1,5 +1,0 @@
-libvmod-cachehits (999.70.4) focal; urgency=medium
-
-  * Support Varnish7.0.x(VRT=14)
-
- -- Michael Nutt <michael@nuttnet.net>  Sun, 26 Dec 2021 11:22:13 +0000

@@ -30,23 +30,23 @@ jobs:
         os:
           - "ubuntu-22.04"
           - "ubuntu-24.04"
-        vrt:
-          - 220
-          - 190
-          - 71
+        varnish:
+          - 60
+          - 77
+          - 80
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
     - name: install build depends
       run: |
-       sudo apt-get install python3-sphinx build-essential devscripts debhelper python3-docutils dh-autoreconf pkg-config autogen automake autotools-dev autoconf libtool libpcre3-dev
+       sudo apt-get install python3-sphinx build-essential devscripts debhelper python3-docutils dh-autoreconf pkg-config autogen automake autotools-dev autoconf libtool libpcre3-dev libedit-dev
     - name: install varnish
       run: |
        cd $GITHUB_WORKSPACE
-       ./sw_vrt.sh ${{ matrix.vrt }}
+       ./sw_vrt.sh ${{ matrix.varnish }}
        cd debian.vrt
        ./pkg.sh
-       ./bf_build_${{ matrix.vrt }}.sh
+       ./bf_build_varnish${{ matrix.varnish }}.sh
     - name: build vmod
       run: |
        cd $GITHUB_WORKSPACE
@@ -55,20 +55,31 @@ jobs:
        ls ../
     - name: Get filename
       id: filename
-      run: find ${GITHUB_WORKSPACE}/../ -maxdepth 1 -name *.deb  -type f  -printf "::set-output name=deb::%f\n"
+      run: |
+        DEB_FILE=$(find ${GITHUB_WORKSPACE}/../ -maxdepth 1 -name '*.deb' -type f -printf '%f\n')
+        echo "deb=$DEB_FILE" >> $GITHUB_OUTPUT
+        cp ${GITHUB_WORKSPACE}/../$DEB_FILE ${GITHUB_WORKSPACE}/
     - name: Test pkg
       run: |
        cd ${GITHUB_WORKSPACE}/../
        sudo dpkg -i ${{ steps.filename.outputs.deb }}
        cd ${GITHUB_WORKSPACE}/debian.vrt
        varnishtest test.vtc
+    - name: Upload artifact
+      if: github.event_name == 'workflow_dispatch'
+      uses: actions/upload-artifact@v5
+      with:
+        name: ${{ steps.filename.outputs.deb }}
+        path: ${{ steps.filename.outputs.deb }}
+        if-no-files-found: error
     - name: Upload Release Asset
+      if: startsWith(github.ref, 'refs/tags/')
       id: upload-release-asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.release.outputs.upload_url }}
-        asset_path: ../${{ steps.filename.outputs.deb }}
+        asset_path: ${{ steps.filename.outputs.deb }}
         asset_name: ${{ steps.filename.outputs.deb }}
         asset_content_type: application/vnd.debian.binary-package

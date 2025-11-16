@@ -1,8 +1,0 @@
-Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: libvmod-cachehits
-Source: https://github.com/mnutt/libvmod-cachehits
-
-Files: *
-Copyright: 2021 Michael Nutt
-
-License: BSD-2-clause
